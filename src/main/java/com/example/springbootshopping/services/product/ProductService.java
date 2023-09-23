@@ -1,17 +1,22 @@
-package com.example.springbootshopping.services;
+package com.example.springbootshopping.services.product;
 
+import com.example.springbootshopping.dao.product.ProductDao;
 import com.example.springbootshopping.models.Product;
 import com.example.springbootshopping.repository.ProductRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProductService {
+
+    private final ProductDao productDao;
 
     @Value("${rabbitmq.exchange.name}")
     private String exchange;
@@ -22,11 +27,9 @@ public class ProductService {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    public ProductService(RabbitTemplate rabbitTemplate){
+    public ProductService(@Qualifier("productRepo")ProductDao productDao, RabbitTemplate rabbitTemplate){
         this.rabbitTemplate = rabbitTemplate;
+        this.productDao = productDao;
     }
 
     public void addProduct(Product product){
@@ -34,25 +37,19 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts(){
-        List<Product> productList = productRepository.findAll();
-        return productList;
+        return productDao.getAllProducts();
     }
 
-    public Optional<Product> getProductById(Long id){
-        return productRepository.findById(id);
+    public Optional<Product> getProductById(UUID id){
+        return productDao.getProductById(id);
     }
 
-    public Product updateProduct(Long id, Product product){
-        Product productToUpdate = productRepository.getReferenceById(id);
-        productToUpdate.setName(product.getName());
-        productToUpdate.setPrice(product.getPrice());
-
-        return productRepository.save(productToUpdate);
+    public Product updateProduct(UUID id, Product product){
+        return productDao.updateProduct(id, product);
     }
 
-    public Long deleteProduct(Long id){
-        productRepository.deleteById(id);
-        return id;
+    public UUID deleteProduct(UUID id){
+        return productDao.deleteProduct(id);
     }
 
 }
