@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class Order {
     private Long totalPrice;
 
     @NotNull
-    private Date date;
+    private Date date = new Date();
 
     @OneToOne(targetEntity = User.class)
     private User user;

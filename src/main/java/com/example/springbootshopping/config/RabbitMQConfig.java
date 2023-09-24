@@ -26,6 +26,9 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.queue.user}")
     private String userQueue;
 
+    @Value("${rabbitmq.queue.log}")
+    private String logQueue;
+
     // ROUTING KEYS
     @Value("${rabbitmq.routing.product}")
     private String productRoutingKey;
@@ -35,6 +38,9 @@ public class RabbitMQConfig {
 
     @Value("${rabbitmq.routing.user}")
     private String userRoutingKey;
+
+    @Value("${rabbitmq.routing.log}")
+    private String logRoutingKey;
 
     @Bean
     public Queue productQueue(){
@@ -49,6 +55,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue userQueue(){
         return new Queue(userQueue);
+    }
+
+    @Bean
+    public Queue logQueue(){
+        return new Queue(logQueue);
     }
 
     @Bean
@@ -75,6 +86,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(userQueue())
                 .to(exchange())
                 .with(userRoutingKey);
+    }
+
+    @Bean
+    public Binding logBinding(){
+        return BindingBuilder.bind((logQueue()))
+                .to(exchange())
+                .with(logRoutingKey);
     }
 
     @Bean
